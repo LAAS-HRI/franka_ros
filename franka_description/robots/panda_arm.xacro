@@ -10,6 +10,22 @@
         <origin rpy="${rpy}" xyz="${xyz}"/>
       </joint>
     </xacro:unless>
+   
+    <link name="table_link">
+    <visual>
+      <geometry>
+        <box size="1.68 0.83 0.768"/>
+      </geometry>
+      <origin rpy="0.0 0.0 0.0" xyz="0 0 0.384"/>
+    </visual>
+    </link> 
+
+    <joint name="table_to_${arm_id}" type="fixed">
+      <parent link="table_link"/>
+      <child link="${arm_id}_link0"/>
+      <origin xyz="-0.558 0.175 0.768"/>
+    </joint>
+    
     <link name="${arm_id}_link0">
       <visual>
         <geometry>
