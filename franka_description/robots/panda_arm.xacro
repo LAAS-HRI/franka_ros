@@ -11,7 +11,7 @@
       </joint>
     </xacro:unless>
    
-    <link name="table_link">
+    <!--link name="table_link">
     <visual>
       <geometry>
         <box size="1.68 0.83 0.768"/>
@@ -24,7 +24,7 @@
       <parent link="table_link"/>
       <child link="${arm_id}_link0"/>
       <origin xyz="-0.558 0.175 0.768"/>
-    </joint>
+    </joint-->
     
     <link name="${arm_id}_link0">
       <visual>
