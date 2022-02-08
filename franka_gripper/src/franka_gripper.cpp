@@ -37,8 +37,14 @@ void gripperCommandExecuteCallback(
     // HACK: As one gripper finger is <mimic>, MoveIt!'s trajectory execution manager
     // only sends us the width of one finger. Multiply by 2 to get the intended width.
     double target_width = 2 * goal->command.position;
+    ROS_ERROR_STREAM("COMMAND POSITION IS [" << goal->command.position << "]");
+
 
     franka::GripperState state = gripper.readOnce();
+    ROS_ERROR_STREAM("FRANKA GRIPPER STATE READING DONE");
+    ROS_ERROR_STREAM("TARGET IS [" << target_width << "]");
+    ROS_ERROR_STREAM("ACTUAL IS [" << state.width << "]");
+
     if (target_width > state.max_width || target_width < 0.0) {
       ROS_ERROR_STREAM("GripperServer: Commanding out of range width! max_width = "
                        << state.max_width << " command = " << target_width);
@@ -46,17 +52,22 @@ void gripperCommandExecuteCallback(
     }
     constexpr double kSamePositionThreshold = 1e-4;
     if (std::abs(target_width - state.width) < kSamePositionThreshold) {
+      ROS_ERROR_STREAM("GOING INTO WEIRD STATE");
       return true;
     }
     if (target_width >= state.width) {
+      ROS_ERROR_STREAM("GOING FOR A MOVE OF " << target_width << " width. Actual is " << state.width);
       return gripper.move(target_width, default_speed);
     }
+    ROS_ERROR_STREAM("GOING FOR A GRASP !!!!! ");
     return gripper.grasp(target_width, default_speed, goal->command.max_effort, grasp_epsilon.inner,
                          grasp_epsilon.outer);
   };
 
   try {
     if (gripper_command_handler()) {
+      ROS_ERROR_STREAM("CHECK HANDLER");
+
       franka::GripperState state;
       if (updateGripperState(gripper, &state)) {
         control_msgs::GripperCommandResult result;
@@ -71,6 +82,8 @@ void gripperCommandExecuteCallback(
   } catch (const franka::Exception& ex) {
     ROS_ERROR_STREAM("" << ex.what());
   }
+  ROS_ERROR_STREAM("GOING FOR ABORT");
+
   action_server->setAborted();
 }
 
